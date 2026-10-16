@@ -14,12 +14,12 @@ const nextConfig: NextConfig = {
         as: "*.css",
       },
     },
+  },
   output: "export",
   basePath: "/south-sauce",
   images: {
     unoptimized: true,
   },
 };
-
 
 export default nextConfig;

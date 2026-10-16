@@ -12,8 +12,6 @@ type VinylPlayerProps = {
   cover?: string;
 };
 
-const basePath = process.env.NODE_ENV === "production" ? "/south-sauce" : "";
-
 function shuffleTracks<T>(tracks: T[]): T[] {
   const result = [...tracks];
   const randomBuffer = new Uint32Array(1);
@@ -31,32 +29,32 @@ function shuffleTracks<T>(tracks: T[]): T[] {
 
 const initTracks: Track[] = [
   {
-  src: `${basePath}/snips/snip_1.mp3`,
+  src: "/snips/snip_1.mp3",
   title: 'snip_1',
   },
   {
-  src: `${basePath}/snips/snip_2.mp3`,
+  src: "/snips/snip_2.mp3",
   title: 'snip_2',
   },
   {
-  src: `${basePath}/snips/snip_3.mp3`,
+  src: "/snips/snip_3.mp3",
   title: 'snip_3',
   },
   {
-  src: `${basePath}/snips/snip_4.mp3`,
+  src: "/snips/snip_4.mp3",
   title: 'snip_4',
   },
   {
-  src: `${basePath}/snips/snip_5.mp3`,
+  src: "/snips/snip_5.mp3",
   title: 'snip_5',
   },
   {
-  src: `${basePath}/snips/snip_6.mp3`,
+  src: "/snips/snip_6.mp3",
   title: 'snip_6',
   },
 ];
 
-const initialCover = `${basePath}/images/disk.png`;
+const initialCover = "/images/disk.png";
 
 export default function VinylPlayer({
   tracks = initTracks,

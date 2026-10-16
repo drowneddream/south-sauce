@@ -12,34 +12,36 @@ type VinylPlayerProps = {
   cover?: string;
 };
 
+const basePath = "/south-sauce";
+
 const initTracks: Track[] = [
   {
-  src: '/snips/snip_1.mp3',
+  src: `${basePath}/snips/snip_1.mp3`,
   title: 'snip_1',
   },
   {
-  src: '/snips/snip_2.mp3',
+  src: `${basePath}/snips/snip_2.mp3`,
   title: 'snip_2',
   },
   {
-  src: '/snips/snip_3.mp3',
+  src: `${basePath}/snips/snip_3.mp3`,
   title: 'snip_3',
   },
   {
-  src: '/snips/snip_4.mp3',
+  src: `${basePath}/snips/snip_4.mp3`,
   title: 'snip_4',
   },
   {
-  src: '/snips/snip_5.mp3',
+  src: `${basePath}/snips/snip_5.mp3`,
   title: 'snip_5',
   },
   {
-  src: '/snips/snip_6.mp3',
+  src: `${basePath}/snips/snip_6.mp3`,
   title: 'snip_6',
   },
 ];
 
-const initialCover = '/images/disk.png';
+const initialCover = `${basePath}/images/disk.png`;
 
 export default function VinylPlayer({
   tracks = initTracks,

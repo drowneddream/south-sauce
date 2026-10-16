@@ -1,0 +1,17 @@
+@import "tailwindcss";
+
+:root {
+  --background: #ffe2ec;
+  --text-color: #7a74b2;
+  --hover-color: #a6a0d5;
+}
+
+body {
+  background: var(--background);
+  font-family: 'Molot', Arial, sans-serif;
+}
+
+.pageLayout {
+  padding-block-start: 40px;
+  padding-inline: 20px;
+}

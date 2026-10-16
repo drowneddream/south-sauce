@@ -12,7 +12,22 @@ type VinylPlayerProps = {
   cover?: string;
 };
 
-const basePath = "/south-sauce";
+const basePath = process.env.NODE_ENV === "production" ? "/south-sauce" : "";
+
+function shuffleTracks<T>(tracks: T[]): T[] {
+  const result = [...tracks];
+  const randomBuffer = new Uint32Array(1);
+
+  for (let i = result.length - 1; i > 0; i--) {
+    crypto.getRandomValues(randomBuffer);
+
+    const j = randomBuffer[0] % (i + 1);
+
+    [result[i], result[j]] = [result[j], result[i]];
+  }
+
+  return result;
+}
 
 const initTracks: Track[] = [
   {
@@ -56,6 +71,8 @@ export default function VinylPlayer({
   const angleRef = useRef(0);
   const startedAtRef = useRef(0);
   const isPlayingRef = useRef(false);
+  const [shuffledTracks] = useState(() => shuffleTracks(tracks));
+  const currentTrack = shuffledTracks[trackIndex];
 
   const ROTATION_DURATION = 3000;
 
@@ -118,16 +135,16 @@ const stopRotation = () => {
 
   useEffect(() => {
     const audio = audioRef.current;
-    if (!audio || !isPlaying || !tracks[trackIndex]) return;
+    if (!audio || !isPlaying || !currentTrack) return;
 
-    audio.src = tracks[trackIndex].src;
+    audio.src = currentTrack.src;
     audio.currentTime = 0;
 
     audio.play().catch((error) => {
       console.error("Ошибка воспроизведения аудио:", error);
       setIsPlaying(false);
     });
-  }, [trackIndex, isPlaying, tracks]);
+  }, [trackIndex, isPlaying, currentTrack]);
 
   const handleClick = () => {
     const audio = audioRef.current;

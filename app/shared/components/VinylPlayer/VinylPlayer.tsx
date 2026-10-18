@@ -55,6 +55,7 @@ const initTracks: Track[] = [
 ];
 
 const initialCover = "/images/disk.png";
+const obvodka = "/images/lines.svg";
 
 export default function VinylPlayer({
   tracks = initTracks,
@@ -190,7 +191,7 @@ const stopRotation = () => {
   if (tracks.length === 0) return null;
 
   return (
-    <div className={"h-screen flex flex-col justify-center align-middle"}>
+    <div className={"h-screen flex flex-col justify-center items-center gap-4"}>
       <audio
         ref={audioRef}
         onEnded={handleEnded}
@@ -202,7 +203,7 @@ const stopRotation = () => {
         onClick={handleClick}
         aria-label={isPlaying ? "Остановить музыку" : "Включить музыку"}
         aria-pressed={isPlaying}
-        className="block mx-auto rounded-full focus-visible:outline-none"
+        className="block mx-auto rounded-full focus-visible:outline-none relative"
       >
       <div
         ref={discRef}
@@ -212,7 +213,15 @@ const stopRotation = () => {
           backgroundImage: `url("${cover}")`,
         }}
       />
+      <div
+        className="aspect-8/7 w-125
+          bg-cover bg-center bg-no-repeat select-none absolute inset-0 -inset-bs-23.75 -inset-s-28"
+        style={{
+          backgroundImage: `url("${obvodka}")`,
+        }}
+      />
       </button>
+      <div className="text-center text-4xl relative max-w-max inset-bs-24 text-(--text-color)">нажми<br />на диск</div>
     </div>
   );
 }

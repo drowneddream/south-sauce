@@ -55,7 +55,6 @@ const initTracks: Track[] = [
 ];
 
 const initialCover = "/images/disk.png";
-const obvodka = "/images/lines.svg";
 
 export default function VinylPlayer({
   tracks = initTracks,
@@ -65,7 +64,7 @@ export default function VinylPlayer({
   const [trackIndex, setTrackIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
   const [isFinished, setIsFinished] = useState(false);
-  const discRef = useRef<HTMLImageElement>(null);
+  const discRef = useRef<HTMLDivElement>(null);
   const animationRef = useRef<Animation | null>(null);
   const angleRef = useRef(0);
   const startedAtRef = useRef(0);
@@ -213,15 +212,16 @@ const stopRotation = () => {
           backgroundImage: `url("${cover}")`,
         }}
       />
-      <div
-        className="aspect-8/7 w-125
-          bg-cover bg-center bg-no-repeat select-none absolute inset-0 -inset-bs-23.75 -inset-s-28"
+      {/* TODO решить проблему с обводкой */}
+      {/* <div
+        aria-hidden="true"
+        className="absolute pointer-events-none w-[261%] h-[246%] left-[-74%] top-[-77%] bg-center bg-no-repeat bg-size-[100%_100%]"
         style={{
           backgroundImage: `url("${obvodka}")`,
         }}
-      />
+      /> */}
       </button>
-      <div className="text-center text-4xl relative max-w-max inset-bs-24 text-(--text-color)">нажми<br />на диск</div>
+      <div className="text-center text-4xl text-(--text-color)">нажми<br />на диск</div>
     </div>
   );
-}
+};

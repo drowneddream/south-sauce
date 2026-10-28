@@ -61,6 +61,8 @@ export default function VinylPlayer({
   cover = initialCover,
 }: VinylPlayerProps) {
   const audioRef = useRef<HTMLAudioElement>(null);
+  const nextAudioRef = useRef<HTMLAudioElement | null>(null);
+  const preloadedSrcRef = useRef<string | null>(null);
   const [trackIndex, setTrackIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
   const [isFinished, setIsFinished] = useState(false);
@@ -75,61 +77,90 @@ export default function VinylPlayer({
   const ROTATION_DURATION = 3000;
 
   const startRotation = () => {
-  const disc = discRef.current;
-  if (!disc) return;
+    const disc = discRef.current;
+    if (!disc) return;
 
-  animationRef.current?.cancel();
+    animationRef.current?.cancel();
 
-  isPlayingRef.current = true;
-  startedAtRef.current = performance.now();
+    isPlayingRef.current = true;
+    startedAtRef.current = performance.now();
 
-  animationRef.current = disc.animate(
-    [
-      { transform: `rotate(${angleRef.current}deg)` },
-      { transform: `rotate(${angleRef.current + 360}deg)` },
-    ],
-    {
-      duration: ROTATION_DURATION,
-      iterations: Infinity,
-      easing: "linear",
+    animationRef.current = disc.animate(
+      [
+        { transform: `rotate(${angleRef.current}deg)` },
+        { transform: `rotate(${angleRef.current + 360}deg)` },
+      ],
+      {
+        duration: ROTATION_DURATION,
+        iterations: Infinity,
+        easing: "linear",
+      }
+    );
+
+    animationRef.current.currentTime =
+      (angleRef.current / 360) * ROTATION_DURATION;
+  };
+
+  const stopRotation = () => {
+    const disc = discRef.current;
+    const animation = animationRef.current;
+
+    if (!disc || !animation) return;
+
+    const computed = getComputedStyle(disc).transform;
+    const matrix = new DOMMatrix(computed);
+
+    let angle = Math.atan2(matrix.b, matrix.a) * (180 / Math.PI);
+    if (angle < 0) angle += 360;
+
+    angleRef.current = angle;
+    animation.cancel();
+    animationRef.current = null;
+
+    disc.animate(
+      [
+        { transform: `rotate(${angle}deg)` },
+        { transform: "rotate(0deg)" },
+      ],
+      {
+        duration: 700,
+        easing: "ease-out",
+        fill: "forwards",
+      }
+    );
+
+    angleRef.current = 0;
+    isPlayingRef.current = false;
+  };
+
+  const preloadNextTrack = () => {
+    const nextIndex = trackIndex + 1;
+
+    if (nextIndex >= shuffledTracks.length) return;
+
+    const nextSrc = shuffledTracks[nextIndex].src;
+
+    if (preloadedSrcRef.current === nextSrc) return;
+
+    const audio = new Audio();
+    audio.preload = "auto";
+    audio.src = nextSrc;
+
+    nextAudioRef.current = audio;
+    preloadedSrcRef.current = nextSrc;
+  };
+
+  const handleTimeUpdate = () => {
+    const audio = audioRef.current;
+
+    if (!audio || !Number.isFinite(audio.duration)) return;
+
+    const remaining = audio.duration - audio.currentTime;
+
+    if (remaining <= 5) {
+      preloadNextTrack();
     }
-  );
-
-  animationRef.current.currentTime =
-    (angleRef.current / 360) * ROTATION_DURATION;
-};
-
-const stopRotation = () => {
-  const disc = discRef.current;
-  const animation = animationRef.current;
-
-  if (!disc || !animation) return;
-
-  const computed = getComputedStyle(disc).transform;
-  const matrix = new DOMMatrix(computed);
-
-  let angle = Math.atan2(matrix.b, matrix.a) * (180 / Math.PI);
-  if (angle < 0) angle += 360;
-
-  angleRef.current = angle;
-  animation.cancel();
-  animationRef.current = null;
-
-  disc.animate(
-    [
-      { transform: `rotate(${angle}deg)` },
-      { transform: "rotate(0deg)" },
-    ],
-    {
-      duration: 700,
-      easing: "ease-out",
-      fill: "forwards",
-    }
-  );
-
-  angleRef.current = 0;
-  isPlayingRef.current = false;
-};
+  };
 
   useEffect(() => {
     const audio = audioRef.current;
@@ -183,7 +214,15 @@ const stopRotation = () => {
   useEffect(() => {
     return () => {
       audioRef.current?.pause();
+      audioRef.current?.removeAttribute("src");
+      audioRef.current?.load();
+
+      nextAudioRef.current?.pause();
+      nextAudioRef.current?.removeAttribute("src");
+      nextAudioRef.current?.load();
+
       audioRef.current = null;
+      nextAudioRef.current = null;
     };
   }, []);
 
@@ -194,7 +233,8 @@ const stopRotation = () => {
       <audio
         ref={audioRef}
         onEnded={handleEnded}
-        preload="metadata"
+        onTimeUpdate={handleTimeUpdate}
+        preload="none"
       />
 
       <button

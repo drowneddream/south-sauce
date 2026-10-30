@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 
 type Track = {
@@ -261,7 +262,7 @@ export default function VinylPlayer({
         }}
       /> */}
       </button>
-      <div className="text-center text-4xl text-(--text-color)">нажми<br />на диск</div>
+      <Link href={"https://band.link/emosous"} rel="noopener noreferrer" target="_blank" className="text-center text-4xl text-(--accent-color) pb-5">пресейв</Link>
     </div>
   );
 };
